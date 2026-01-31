@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sped_viewer/sped_viewer.dart';
 import 'dart:typed_data';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
-import 'package:printing/printing.dart'; // Importe o print
+import 'package:pdf/pdf.dart';
 
 void main() {
   runApp(const SpedViewerTestApp());
@@ -16,6 +14,7 @@ class SpedViewerTestApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'SPED Viewer Test',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -96,7 +95,8 @@ class _SpedViewerTestScreenState extends State<SpedViewerTestScreen> {
       final bytes = await pdf.save();
 
       // Salvar o PDF e exibir
-      await _exibirPdf(bytes, 'NF-e_SEFAZ_Exemplo.pdf');
+      await _exibirPdf(bytes, 'NF-e_SEFAZ_Exemplo.pdf',
+          (format) async => (await danfePrinter.generate()).save());
     } catch (e) {
       if (!mounted) return;
       _mostrarErro('Erro ao gerar NF-e: $e');
@@ -116,7 +116,8 @@ class _SpedViewerTestScreenState extends State<SpedViewerTestScreen> {
       final bytes = await pdf.save();
 
       // Salvar o PDF e exibir
-      await _exibirPdf(bytes, 'CT-e_SEFAZ_Exemplo.pdf');
+      await _exibirPdf(bytes, 'CT-e_SEFAZ_Exemplo.pdf',
+          (format) async => (await dactePrinter.generate()).save());
     } catch (e) {
       if (!mounted) return;
       _mostrarErro('Erro ao gerar CT-e: $e');
@@ -327,20 +328,14 @@ class _SpedViewerTestScreenState extends State<SpedViewerTestScreen> {
     );
   }
 
-  Future<void> _exibirPdf(Uint8List pdfBytes, String fileName) async {
-    // Obter o diretório de documentos do dispositivo
-    final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/$fileName');
-
-    // Salvar o PDF no dispositivo
-    await file.writeAsBytes(pdfBytes);
-
+  Future<void> _exibirPdf(Uint8List pdfBytes, String fileName,
+      Future<Uint8List> Function(PdfPageFormat format) buildPdf) async {
     if (!mounted) return;
-    // Navegar para a tela de visualização do PDF
+    // Navegar para a tela de visualização do PDF usando o novo widget do pacote
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => PdfViewerScreen(
-          pdfPath: file.path,
+        builder: (context) => SpedPdfViewer(
+          buildPdf: buildPdf,
           fileName: fileName,
         ),
       ),
@@ -364,54 +359,6 @@ class _SpedViewerTestScreenState extends State<SpedViewerTestScreen> {
           ],
         );
       },
-    );
-  }
-}
-
-class PdfViewerScreen extends StatefulWidget {
-  final String pdfPath;
-  final String fileName;
-
-  const PdfViewerScreen({
-    super.key,
-    required this.pdfPath,
-    required this.fileName,
-  });
-
-  @override
-  State<PdfViewerScreen> createState() => _PdfViewerScreenState();
-}
-
-class _PdfViewerScreenState extends State<PdfViewerScreen> {
-  @override
-  void dispose() {
-    _limparArquivoTemporario();
-    super.dispose();
-  }
-
-  Future<void> _limparArquivoTemporario() async {
-    try {
-      final file = File(widget.pdfPath);
-      if (await file.exists()) {
-        await file.delete();
-        debugPrint('Arquivo temporário removido.');
-      }
-    } catch (e) {
-      debugPrint('Erro ao remover: $e');
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.fileName)),
-      // O PdfPreview já resolve tudo: visualização, impressão e download
-      body: PdfPreview(
-        build: (format) => File(widget.pdfPath).readAsBytesSync(),
-        canChangePageFormat: false,
-        canChangeOrientation: false,
-        canDebug: false,
-      ),
     );
   }
 }

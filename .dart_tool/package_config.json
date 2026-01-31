@@ -86,6 +86,24 @@
       "languageVersion": "3.8"
     },
     {
+      "name": "flutter_web_plugins",
+      "rootUri": "file:///Users/pablo/flutter/packages/flutter_web_plugins",
+      "packageUri": "lib/",
+      "languageVersion": "3.8"
+    },
+    {
+      "name": "http",
+      "rootUri": "file:///Users/pablo/.pub-cache/hosted/pub.dev/http-1.6.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
+      "name": "http_parser",
+      "rootUri": "file:///Users/pablo/.pub-cache/hosted/pub.dev/http_parser-4.1.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
       "name": "image",
       "rootUri": "file:///Users/pablo/.pub-cache/hosted/pub.dev/image-4.5.4",
       "packageUri": "lib/",
@@ -152,16 +170,34 @@
       "languageVersion": "2.19"
     },
     {
+      "name": "pdf_widget_wrapper",
+      "rootUri": "file:///Users/pablo/.pub-cache/hosted/pub.dev/pdf_widget_wrapper-1.0.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
+    },
+    {
       "name": "petitparser",
       "rootUri": "file:///Users/pablo/.pub-cache/hosted/pub.dev/petitparser-7.0.1",
       "packageUri": "lib/",
       "languageVersion": "3.8"
     },
     {
+      "name": "plugin_platform_interface",
+      "rootUri": "file:///Users/pablo/.pub-cache/hosted/pub.dev/plugin_platform_interface-2.1.8",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "posix",
       "rootUri": "file:///Users/pablo/.pub-cache/hosted/pub.dev/posix-6.0.3",
       "packageUri": "lib/",
       "languageVersion": "3.0"
+    },
+    {
+      "name": "printing",
+      "rootUri": "file:///Users/pablo/.pub-cache/hosted/pub.dev/printing-5.14.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
     },
     {
       "name": "qr",
@@ -228,6 +264,12 @@
       "rootUri": "file:///Users/pablo/.pub-cache/hosted/pub.dev/vm_service-15.0.2",
       "packageUri": "lib/",
       "languageVersion": "3.5"
+    },
+    {
+      "name": "web",
+      "rootUri": "file:///Users/pablo/.pub-cache/hosted/pub.dev/web-1.1.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
     },
     {
       "name": "xml",

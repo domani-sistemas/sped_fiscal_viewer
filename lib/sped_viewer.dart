@@ -11,3 +11,6 @@ export 'src/models/impostos.dart';
 export 'src/printers/danfe_printer.dart';
 export 'src/printers/danfe_sefaz_printer.dart';
 export 'src/printers/dacte_sefaz_printer.dart';
+
+// Widgets
+export 'src/widgets/sped_pdf_viewer.dart';
