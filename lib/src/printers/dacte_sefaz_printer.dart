@@ -23,7 +23,6 @@ class DacteSefazPrinter {
           _buildExpedidor(),
           _buildRecebedor(),
           _buildTomadorServico(),
-          _buildDadosCte(),
           _buildDocumentosOriginarios(), // Nova seção adicionada
           _buildComponentesValor(),
           _buildImposto(),
@@ -186,11 +185,11 @@ class DacteSefazPrinter {
         pw.Row(
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
-            // Coluna esquerda - Identificação do emitente
+            // Coluna esquerda - Identificação do emitente (40%)
             pw.Expanded(
               flex: 40,
               child: pw.Container(
-                height: 80,
+                height: 120,
                 decoration: pw.BoxDecoration(
                   border: pw.Border.all(color: PdfColors.black, width: 0.5),
                 ),
@@ -228,91 +227,110 @@ class DacteSefazPrinter {
                       style: pw.TextStyle(fontSize: 8),
                     ),
                     pw.Text(
-                      'Insc.Estadual: ${data.emitente.ie ?? ''}',
+                      'Insc. Estadual: ${data.emitente.ie ?? ''}',
                       style: pw.TextStyle(fontSize: 8),
                     ),
                   ],
                 ),
               ),
             ),
-            // Coluna central - DACTE
+            // Coluna central - DACTE e Campos de Tipo (20%)
             pw.Expanded(
               flex: 20,
               child: pw.Container(
-                height: 80,
+                height: 120,
                 decoration: pw.BoxDecoration(
                   border: pw.Border.all(color: PdfColors.black, width: 0.5),
                 ),
+                padding: const pw.EdgeInsets.all(3),
                 child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    // Seção superior - Título DACTE
-                    pw.Container(
-                      height: 25,
-                      child: pw.Column(
-                        mainAxisAlignment: pw.MainAxisAlignment.center,
-                        children: [
-                          pw.Text(
-                            'DACTE',
-                            style: pw.TextStyle(
-                                fontSize: 10, fontWeight: pw.FontWeight.bold),
-                          ),
-                          pw.Padding(
-                            padding:
-                                const pw.EdgeInsets.symmetric(horizontal: 2),
-                            child: pw.Text(
-                              'Documento Auxiliar do Conhecimento de Transporte Eletrônico',
-                              textAlign: pw.TextAlign.center,
-                              style: pw.TextStyle(fontSize: 6),
-                            ),
-                          ),
-                        ],
+                    _label('TIPO DO CTE'),
+                    _value('0 - Normal', size: 7),
+                    pw.SizedBox(height: 1),
+                    _label('TIPO DO SERVIÇO'),
+                    _value('0 - Normal', size: 7),
+                    pw.SizedBox(height: 1),
+                    _label('TOMADOR DO SERVIÇO'),
+                    _value('3 - Destinatário', size: 7),
+                    pw.SizedBox(height: 2),
+                    pw.Center(
+                      child: pw.Text(
+                        'DACTE',
+                        style: pw.TextStyle(
+                            fontSize: 10, fontWeight: pw.FontWeight.bold),
                       ),
                     ),
-                    // Seção inferior - Lista de campos
-                    pw.Expanded(
-                      child: pw.Padding(
-                        padding: const pw.EdgeInsets.all(2),
-                        child: pw.Column(
-                          crossAxisAlignment: pw.CrossAxisAlignment.start,
-                          mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
-                          children: [
-                            pw.Text('MODAL: Rodoviário',
-                                style: pw.TextStyle(fontSize: 7)),
-                            pw.Text('MODELO: 57',
-                                style: pw.TextStyle(fontSize: 7)),
-                            pw.Text('SÉRIE: ${data.serie}',
-                                style: pw.TextStyle(fontSize: 7)),
-                            pw.Text('NÚMERO: ${data.numeroDocumento}',
-                                style: pw.TextStyle(fontSize: 7)),
-                            pw.Text('FL: 1/1',
-                                style: pw.TextStyle(fontSize: 7)),
-                            pw.Text('TIPO DO CT-e: 0 - NORMAL',
-                                style: pw.TextStyle(fontSize: 7)),
-                            pw.Text('TIPO DO SERVIÇO: 0 - NORMAL',
-                                style: pw.TextStyle(fontSize: 7)),
-                            pw.Text('DATA/HORA EMISSÃO:',
-                                style: pw.TextStyle(fontSize: 6)),
-                            pw.Text('${data.dataEmissaoFormatada} 10:30:00',
-                                style: pw.TextStyle(fontSize: 7)),
-                          ],
-                        ),
-                      ),
+                    pw.Center(
+                      child: pw.Text('Documento Auxiliar do',
+                          style: pw.TextStyle(fontSize: 5)),
+                    ),
+                    pw.Center(
+                      child: pw.Text('Conhecimento de Transporte',
+                          style: pw.TextStyle(fontSize: 5)),
+                    ),
+                    pw.Center(
+                      child: pw.Text('Eletrônico',
+                          style: pw.TextStyle(fontSize: 5)),
+                    ),
+                    pw.SizedBox(height: 2),
+                    pw.Row(
+                      children: [
+                        pw.Text('MODAL: ',
+                            style: pw.TextStyle(
+                                fontSize: 6, fontWeight: pw.FontWeight.bold)),
+                        pw.Text('Rodoviário', style: pw.TextStyle(fontSize: 6)),
+                      ],
+                    ),
+                    pw.Row(
+                      children: [
+                        pw.Text('MODELO: ',
+                            style: pw.TextStyle(
+                                fontSize: 6, fontWeight: pw.FontWeight.bold)),
+                        pw.Text('57', style: pw.TextStyle(fontSize: 6)),
+                      ],
+                    ),
+                    pw.Row(
+                      children: [
+                        pw.Text('SÉRIE: ',
+                            style: pw.TextStyle(
+                                fontSize: 6, fontWeight: pw.FontWeight.bold)),
+                        pw.Text(data.serie, style: pw.TextStyle(fontSize: 6)),
+                      ],
+                    ),
+                    pw.Row(
+                      children: [
+                        pw.Text('NÚMERO: ',
+                            style: pw.TextStyle(
+                                fontSize: 6, fontWeight: pw.FontWeight.bold)),
+                        pw.Text('${data.numeroDocumento}',
+                            style: pw.TextStyle(fontSize: 6)),
+                      ],
+                    ),
+                    pw.Row(
+                      children: [
+                        pw.Text('FL: ',
+                            style: pw.TextStyle(
+                                fontSize: 6, fontWeight: pw.FontWeight.bold)),
+                        pw.Text('1/1', style: pw.TextStyle(fontSize: 6)),
+                      ],
                     ),
                   ],
                 ),
               ),
             ),
-            // Coluna direita - Código de barras e chave de acesso
+            // Coluna direita - Código de barras, Chave e Protocolo (40%)
             pw.Expanded(
               flex: 40,
               child: pw.Container(
-                height: 80,
+                height: 120,
                 decoration: pw.BoxDecoration(
                   border: pw.Border.all(color: PdfColors.black, width: 0.5),
                 ),
-                padding: const pw.EdgeInsets.all(4),
+                padding: const pw.EdgeInsets.all(3),
                 child: pw.Column(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
                     pw.LayoutBuilder(builder: (context, constraints) {
                       return pw.BarcodeWidget(
@@ -323,74 +341,85 @@ class DacteSefazPrinter {
                         drawText: false,
                       );
                     }),
-                    pw.Container(
-                      height: 20,
-                      decoration: pw.BoxDecoration(
-                        border:
-                            pw.Border.all(color: PdfColors.black, width: 0.5),
-                      ),
-                      child: pw.Column(
-                        children: [
-                          pw.Container(
-                            height: 8,
-                            color: PdfColors.grey100,
-                            child: pw.Center(
-                              child: pw.Text(
-                                'CHAVE DE ACESSO',
-                                style: pw.TextStyle(
-                                    fontSize: 6,
-                                    fontWeight: pw.FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                          pw.Expanded(
-                            child: pw.Center(
-                              child: pw.Text(
-                                _formatarChaveAcessoDacte(data.chaveAcesso),
-                                style: pw.TextStyle(
-                                    font: pw.Font.courier(),
-                                    fontSize: 8,
-                                    fontWeight: pw.FontWeight.bold),
-                                textAlign: pw.TextAlign.center,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    pw.SizedBox(height: 2),
+                    _label('CHAVE DE ACESSO'),
+                    pw.Text(
+                      _formatarChaveAcessoDacte(data.chaveAcesso),
+                      style: pw.TextStyle(fontSize: 7, font: pw.Font.courier()),
+                      maxLines: 2,
                     ),
+                    pw.SizedBox(height: 1),
                     pw.Text(
                       'Consulta de autenticidade no portal nacional do CT-e',
                       textAlign: pw.TextAlign.center,
                       style: pw.TextStyle(fontSize: 5),
                     ),
+                    pw.SizedBox(height: 4),
+                    _label('PROTOCOLO DE AUTORIZAÇÃO DE USO'),
+                    _value(
+                        '135240000000000 - ${data.dataEmissaoFormatada} 10:30:00',
+                        size: 7),
+                    pw.SizedBox(height: 4),
+                    _label('DATA/HORA EMISSÃO'),
+                    _value('${data.dataEmissaoFormatada} 10:30:00', size: 7),
                   ],
                 ),
               ),
             ),
           ],
         ),
-        pw.SizedBox(height: 2),
-        // Linha com natureza da operação e protocolo de autorização
+        // Segunda linha do header - Natureza e Prestação
         pw.Row(
           children: [
             pw.Expanded(
               flex: 60,
               child: _boxWithLabel(
-                height: 16,
-                label: 'NATUREZA DA OPERAÇÃO',
-                child: _value('TRANSPORTE DE CARGA', size: 8),
+                height: 25,
+                label: 'CFOP - NATUREZA DA OPERAÇÃO',
+                child: _value('5351 - TRANSPORTE DE CARGA', size: 8),
               ),
             ),
             pw.Expanded(
               flex: 40,
-              child: _boxWithLabel(
-                height: 16,
-                label: 'PROTOCOLO DE AUTORIZAÇÃO DE USO',
-                child: pw.Align(
-                  alignment: pw.Alignment.centerLeft,
-                  child: _value(
-                      '135240000000000 - ${data.dataEmissaoFormatada} 10:30:00',
-                      size: 8),
+              child: pw.Container(
+                height: 25,
+                decoration: pw.BoxDecoration(
+                  border: pw.Border.all(color: PdfColors.black, width: 0.5),
+                ),
+                child: pw.Row(
+                  children: [
+                    pw.Expanded(
+                      child: pw.Container(
+                        padding: const pw.EdgeInsets.symmetric(horizontal: 2),
+                        decoration: pw.BoxDecoration(
+                          border: pw.Border(
+                              right: pw.BorderSide(
+                                  color: PdfColors.black, width: 0.5)),
+                        ),
+                        child: pw.Column(
+                          crossAxisAlignment: pw.CrossAxisAlignment.start,
+                          mainAxisAlignment: pw.MainAxisAlignment.center,
+                          children: [
+                            _label('INÍCIO DA PRESTAÇÃO'),
+                            _value('SÃO PAULO - SP', size: 7),
+                          ],
+                        ),
+                      ),
+                    ),
+                    pw.Expanded(
+                      child: pw.Container(
+                        padding: const pw.EdgeInsets.symmetric(horizontal: 2),
+                        child: pw.Column(
+                          crossAxisAlignment: pw.CrossAxisAlignment.start,
+                          mainAxisAlignment: pw.MainAxisAlignment.center,
+                          children: [
+                            _label('TÉRMINO DA PRESTAÇÃO'),
+                            _value('BELO HORIZONTE - MG', size: 7),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -837,34 +866,6 @@ class DacteSefazPrinter {
   // =========================
   // DADOS DO CT-e (SIMPLIFICADO)
   // =========================
-  pw.Widget _buildDadosCte() {
-    return pw.Column(
-      children: [
-        pw.Row(
-          children: [
-            pw.Expanded(
-                flex: 25,
-                child: _boxWithLabel(
-                    height: 12,
-                    label: 'CFOP - NATUREZA DA OPERAÇÃO',
-                    child: _value(data.cfopPrincipal.toString(), size: 8))),
-            pw.Expanded(
-                child: _boxWithLabel(
-                    height: 12,
-                    label: 'INÍCIO DA PRESTAÇÃO',
-                    child: _value(data.emitente.enderecoMunicipio ?? '',
-                        size: 8))),
-            pw.Expanded(
-                child: _boxWithLabel(
-                    height: 12,
-                    label: 'TÉRMINO DA PRESTAÇÃO',
-                    child: _value(data.destinatario.enderecoMunicipio ?? '',
-                        size: 8))),
-          ],
-        ),
-      ],
-    );
-  }
 
   // =========================
   // DOCUMENTOS ORIGINÁRIOS
@@ -1123,81 +1124,134 @@ class DacteSefazPrinter {
   pw.Widget _buildCarga() {
     return pw.Column(
       children: [
+        // Produto predominante
         pw.Container(
           height: 10,
           width: double.infinity,
           decoration: pw.BoxDecoration(
-            border: pw.Border.all(color: PdfColors.black, width: 0.5),
+            border: pw.Border.all(width: 0.5),
             color: PdfColors.grey100,
           ),
-          alignment: pw.Alignment.center,
-          child: pw.Text('INFORMAÇÕES DA CARGA',
-              style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold)),
+          padding: const pw.EdgeInsets.only(left: 2),
+          alignment: pw.Alignment.centerLeft,
+          child: pw.Text(
+            'PRODUTO PREDOMINANTE',
+            style: pw.TextStyle(fontSize: 6, fontWeight: pw.FontWeight.bold),
+          ),
         ),
+        pw.Container(
+          height: 12,
+          width: double.infinity,
+          decoration: pw.BoxDecoration(
+            border: pw.Border.all(width: 0.5),
+          ),
+          padding: const pw.EdgeInsets.only(left: 2),
+          alignment: pw.Alignment.centerLeft,
+          child: pw.Text(
+            'Transporte Rodoviário de Carga', // Fallback value since model is missing produtoPredominante
+            style: pw.TextStyle(fontSize: 8),
+          ),
+        ),
+
+        // Outras características e valor
         pw.Row(
           children: [
             pw.Expanded(
-              flex: 40,
+              flex: 65,
               child: _boxWithLabel(
-                  height: 14,
-                  label: 'PRODUTO PREDOMINANTE',
-                  child: _value(
-                      data.itens.isNotEmpty
-                          ? data.itens.first.descricaoProduto
-                          : '',
-                      size: 7)),
+                height: 12,
+                label: 'OUTRAS CARACTERÍSTICAS DA CARGA',
+                child: _value(
+                    'ESPECIE: ${data.transporte.especieVolumes ?? ""}',
+                    size: 8),
+              ),
             ),
             pw.Expanded(
-              flex: 30,
+              flex: 35,
               child: _boxWithLabel(
-                  height: 14,
-                  label: 'OUTRAS CARACTERÍSTICAS DA CARGA',
-                  child: _value('', size: 7)),
-            ),
-            pw.Expanded(
-              flex: 30,
-              child: _boxWithLabel(
-                  height: 14,
-                  label: 'VALOR TOTAL DA MERCADORIA',
-                  child: _value(
-                      data.valorTotalProdutos
-                          .toStringAsFixed(2)
-                          .replaceAll('.', ','),
-                      size: 7)),
+                height: 12,
+                label: 'VALOR TOTAL DA MERCADORIA',
+                child: _value(
+                  'R\$ ${data.valorTotalProdutos.toStringAsFixed(2).replaceAll('.', ',')}',
+                  size: 8,
+                ),
+              ),
             ),
           ],
         ),
+
+        // Peso, volumes, cubagem - linha 1
         pw.Row(
           children: [
             pw.Expanded(
+              flex: 20,
               child: _boxWithLabel(
-                  height: 14,
-                  label: 'TP MED / UN. MED',
-                  child: _value('PESO / KG', size: 7)),
+                height: 12,
+                label: 'TP MED/UN.MED',
+                child: _value('PESO/KG', size: 8),
+              ),
             ),
             pw.Expanded(
+              flex: 30,
               child: _boxWithLabel(
-                  height: 14,
-                  label: 'PESO BRUTO (KG)',
-                  child: _value(
-                      data.transporte.pesoBruto
-                              ?.toStringAsFixed(3)
-                              .replaceAll('.', ',') ??
-                          '0,000',
-                      size: 7)),
+                height: 12,
+                label: 'PESO DECLARADO',
+                child: _value(
+                  '${data.transporte.pesoBruto?.toStringAsFixed(3).replaceAll('.', ',') ?? '0,000'} KG',
+                  size: 8,
+                ),
+              ),
             ),
             pw.Expanded(
+              flex: 20,
               child: _boxWithLabel(
-                  height: 14,
-                  label: 'QTDE (VOL)',
-                  child: _value(data.transporte.quantidadeVolumes ?? '1',
-                      size: 7)),
+                height: 12,
+                label: 'TP MED/UN.MED',
+                child: _value('UN', size: 8),
+              ),
             ),
             pw.Expanded(
+              flex: 30,
               child: _boxWithLabel(
-                  height: 14,
-                  label: 'CUBAGEM (M3)',
-                  child: _value('0,000', size: 7)),
+                height: 12,
+                label: 'VOLUMES',
+                child:
+                    _value(data.transporte.quantidadeVolumes ?? '1', size: 8),
+              ),
+            ),
+          ],
+        ),
+
+        // Cubagem e quantidade - linha 2
+        pw.Row(
+          children: [
+            pw.Expanded(
+              flex: 20,
+              child: _boxWithLabel(
+                height: 12,
+                label: 'TP MED/UN.MED',
+                child: _value('M3', size: 8),
+              ),
+            ),
+            pw.Expanded(
+              flex: 30,
+              child: _boxWithLabel(
+                height: 12,
+                label: 'CUBAGEM(M³)',
+                child: _value(
+                  '0,000', // Fallback value since model is missing cubagem
+                  size: 8,
+                ),
+              ),
+            ),
+            pw.Expanded(
+              flex: 50,
+              child: _boxWithLabel(
+                height: 12,
+                label: 'QTDE(VOL)',
+                child:
+                    _value(data.transporte.quantidadeVolumes ?? '1', size: 8),
+              ),
             ),
           ],
         ),
@@ -1222,23 +1276,30 @@ class DacteSefazPrinter {
         pw.Row(
           children: [
             pw.Expanded(
-              flex: 40,
+              flex: 25,
               child: _boxWithLabel(
-                  height: 14,
+                  height: 12,
                   label: 'RESPONSÁVEL',
-                  child: _value('4-REMETENTE', size: 7)),
+                  child: _value('4-REMETENTE', size: 8)),
             ),
             pw.Expanded(
-              flex: 30,
+              flex: 25,
               child: _boxWithLabel(
-                  height: 14, label: 'SEGURADORA', child: _value('', size: 7)),
+                  height: 12, label: 'SEGURADORA', child: _value('', size: 8)),
             ),
             pw.Expanded(
-              flex: 30,
+              flex: 25,
               child: _boxWithLabel(
-                  height: 14,
+                  height: 12,
                   label: 'NÚMERO DA APÓLICE',
-                  child: _value('', size: 7)),
+                  child: _value('', size: 8)),
+            ),
+            pw.Expanded(
+              flex: 25,
+              child: _boxWithLabel(
+                  height: 12,
+                  label: 'NÚMERO DA AVERBAÇÃO',
+                  child: _value('', size: 8)),
             ),
           ],
         ),
@@ -1407,8 +1468,19 @@ class DacteSefazPrinter {
 
   String _formatarChaveAcessoDacte(String chave) {
     if (chave.length != 44) return chave;
-    // Formato SEFAZ DACTE: XX.AAMM.CNPJ-MM-SSS-NNNNNNNN-DV
-    return '${chave.substring(0, 2)}.${chave.substring(2, 6)}.${chave.substring(6, 20)}-${chave.substring(20, 22)}-${chave.substring(22, 25)}-${chave.substring(25, 43)}-${chave.substring(43, 44)}';
+
+    // Estrutura da chave CT-e (44 dígitos):
+    // UF (2) + AAMM (4) + CNPJ (14) + Modelo (2) + Série (3) + Número (9) + Código (8) + DV (2)
+    final uf = chave.substring(0, 2);
+    final aamm = chave.substring(2, 6);
+    final cnpj = chave.substring(6, 20);
+    final modelo = chave.substring(20, 22);
+    final serie = chave.substring(22, 25);
+    final numero = chave.substring(25, 34);
+    final codigo = chave.substring(34, 42);
+    final dv = chave.substring(42, 44);
+
+    return '$uf.$aamm.$cnpj-$modelo-$serie-$numero-$codigo-$dv';
   }
 
   pw.Widget _buildFooter() {

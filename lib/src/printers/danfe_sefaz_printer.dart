@@ -858,7 +858,7 @@ class DanfeSefazPrinter {
           _headerCell('CÓD.\nPROD.', 8),
           _headerCell('DESCRIÇÃO DO PRODUTO / SERVIÇO', 30),
           _headerCell('NCM/SH', 8),
-          _headerCell('CST', 4),
+          _headerCell('O/CST', 4),
           _headerCell('CFOP', 4),
           _headerCell('UN', 3),
           _headerCell('QUANT.', 7),
