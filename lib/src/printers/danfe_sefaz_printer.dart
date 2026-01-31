@@ -786,14 +786,16 @@ class DanfeSefazPrinter {
     const double alturaA4 = 841.89;
     const double margemTotal = 16.0;
     const double alturaCanhoto = 50.0;
-    const double alturaHeader = 100.0;
-    const double alturaDestinatario = 70.0;
-    const double alturaLocalEntrega = 0.0;
-    const double alturaFaturas = 26.0;
+    const double alturaHeader = 108.0;
+    const double alturaDestinatario = 68.0;
+    final double alturaLocalEntrega =
+        data.destinatario.enderecoLogradouro == null ? 0.0 : 54.0;
+    const double alturaFaturas = 42.0;
     const double alturaTotais = 90.0;
-    const double alturaTransporte = 55.0;
-    const double alturaDadosAdicionais = 50.0;
+    const double alturaTransporte = 54.0;
+    const double alturaDadosAdicionais = 62.0;
     const double alturaFooter = 15.0;
+    const double margemSeguranca = 10.0;
 
     double alturaFixa = margemTotal +
         alturaCanhoto +
@@ -804,9 +806,10 @@ class DanfeSefazPrinter {
         alturaTotais +
         alturaTransporte +
         alturaDadosAdicionais +
-        alturaFooter;
+        alturaFooter +
+        margemSeguranca;
 
-    return (alturaA4 - alturaFixa).clamp(200.0, 400.0);
+    return (alturaA4 - alturaFixa).clamp(100.0, 600.0);
   }
 
   pw.Widget _buildTabelaItens() {
