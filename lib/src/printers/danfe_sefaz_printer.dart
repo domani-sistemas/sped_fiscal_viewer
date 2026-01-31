@@ -16,14 +16,15 @@ class DanfeSefazPrinter {
         margin: const pw.EdgeInsets.all(
             8), // Margem reduzida para melhor aproveitamento
         build: (context) => [
-          _buildCanhotoPrincipal(), // Declaração de recebimento no topo
+          _buildCanhotoPrincipal(),
           _buildHeader(),
           _buildDestinatarioRemetente(),
-          _buildLocalEntrega(), // Seção obrigatória que estava faltando
+          _buildLocalEntrega(),
           _buildFaturas(),
-          _buildTabelaItens(),
           _buildTotais(),
           _buildTransporte(),
+          _buildTabelaItens(),
+          _buildIssqn(),
           _buildDadosAdicionaisFisco(),
         ],
         footer: (context) => _buildFooter(),
@@ -38,55 +39,74 @@ class DanfeSefazPrinter {
   // =========================
 
   pw.Widget _buildCanhotoPrincipal() {
-    return pw.Column(
-      children: [
-        pw.Container(
-          height: 50,
-          decoration: pw.BoxDecoration(
-            border: pw.Border.all(color: PdfColors.black, width: 0.5),
-          ),
-          child: pw.Padding(
-            padding: const pw.EdgeInsets.all(4),
-            child: pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
-              children: [
-                pw.Text(
-                  'RECEBEMOS DE ${data.emitente.nome.toUpperCase()} OS PRODUTOS E/OU SERVIÇOS CONSTANTES DA NOTA FISCAL ELETRÔNICA INDICADA ABAIXO.',
-                  style:
-                      pw.TextStyle(fontSize: 6, fontWeight: pw.FontWeight.bold),
-                ),
-                pw.SizedBox(height: 2),
-                pw.Text(
-                  'EMISSÃO: ${data.dataEmissaoFormatada} VALOR TOTAL: ${data.valorTotalFormatado} DESTINATÁRIO: ${data.destinatario.nome.toUpperCase()}',
-                  style: pw.TextStyle(fontSize: 6),
-                ),
-                pw.Text(
-                  '${data.destinatario.enderecoLogradouro}, ${data.destinatario.enderecoNumero} ${data.destinatario.enderecoBairro} ${data.destinatario.enderecoMunicipio}-${data.destinatario.enderecoUf}',
-                  style: pw.TextStyle(fontSize: 6),
-                ),
-                pw.SizedBox(height: 4),
-                pw.Row(
-                  children: [
-                    pw.Expanded(
-                      child: pw.Text(
+    return pw.Container(
+      height: 50,
+      decoration: pw.BoxDecoration(
+        border: pw.Border.all(color: PdfColors.black, width: 0.5),
+      ),
+      child: pw.Padding(
+        padding: const pw.EdgeInsets.all(2),
+        child: pw.Row(
+          children: [
+            pw.Expanded(
+              flex: 75,
+              child: pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.Text(
+                    'RECEBEMOS DE ${data.emitente.nome.toUpperCase()} OS PRODUTOS E/OU SERVIÇOS CONSTANTES DA NOTA FISCAL ELETRÔNICA INDICADA ABAIXO.',
+                    style: pw.TextStyle(
+                        fontSize: 6, fontWeight: pw.FontWeight.bold),
+                  ),
+                  pw.Text(
+                    'EMISSÃO: ${data.dataEmissaoFormatada} VALOR TOTAL: ${data.valorTotalFormatado}',
+                    style: pw.TextStyle(fontSize: 6),
+                  ),
+                  pw.Text(
+                    'DESTINATÁRIO: ${data.destinatario.nome.toUpperCase()}',
+                    style: pw.TextStyle(fontSize: 6),
+                  ),
+                  pw.Text(
+                    '${data.destinatario.enderecoLogradouro}, ${data.destinatario.enderecoNumero} ${data.destinatario.enderecoBairro} ${data.destinatario.enderecoMunicipio}-${data.destinatario.enderecoUf}',
+                    style: pw.TextStyle(fontSize: 6),
+                  ),
+                  pw.Spacer(),
+                  pw.Row(
+                    children: [
+                      pw.Text(
                         'DATA DE RECEBIMENTO: ___/___/______',
                         style: pw.TextStyle(fontSize: 6),
                       ),
-                    ),
-                    pw.Expanded(
-                      child: pw.Text(
-                        'IDENTIFICAÇÃO E ASSINATURA DO RECEBEDOR: _________________________________',
+                      pw.SizedBox(width: 20),
+                      pw.Text(
+                        'IDENTIFICAÇÃO E ASSINATURA DO RECEBEDOR',
                         style: pw.TextStyle(fontSize: 6),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
+            pw.Container(width: 0.5, color: PdfColors.black),
+            pw.Expanded(
+              flex: 25,
+              child: pw.Column(
+                mainAxisAlignment: pw.MainAxisAlignment.center,
+                children: [
+                  pw.Text('NF-e',
+                      style: pw.TextStyle(
+                          fontSize: 10, fontWeight: pw.FontWeight.bold)),
+                  pw.Text('Nº. ${_formatarNumeroNfe(data.numeroDocumento)}',
+                      style: pw.TextStyle(
+                          fontSize: 8, fontWeight: pw.FontWeight.bold)),
+                  pw.Text('Série ${data.serie.padLeft(3, '0')}',
+                      style: pw.TextStyle(fontSize: 8)),
+                ],
+              ),
+            ),
+          ],
         ),
-        pw.SizedBox(height: 5),
-      ],
+      ),
     );
   }
 
@@ -244,7 +264,7 @@ class DanfeSefazPrinter {
                     pw.Text(
                       'DANFE',
                       style: pw.TextStyle(
-                          fontSize: 18, fontWeight: pw.FontWeight.bold),
+                          fontSize: 12, fontWeight: pw.FontWeight.bold),
                     ),
                     pw.Padding(
                       padding: const pw.EdgeInsets.symmetric(horizontal: 4),
@@ -277,9 +297,9 @@ class DanfeSefazPrinter {
                           ),
                           child: pw.Center(
                             child: pw.Text(
-                              data.tipoOperacao == 'S' ? '1' : '0',
+                              data.tipoOperacao == 'S' ? 'X' : '',
                               style: pw.TextStyle(
-                                  fontSize: 12, fontWeight: pw.FontWeight.bold),
+                                  fontSize: 10, fontWeight: pw.FontWeight.bold),
                             ),
                           ),
                         ),
@@ -287,20 +307,18 @@ class DanfeSefazPrinter {
                     ),
                     pw.SizedBox(height: 8),
                     pw.Text(
-                      'Nº ${data.numeroDocumento.toString().padLeft(9, '0')}',
+                      'Nº. ${_formatarNumeroNfe(data.numeroDocumento)}',
                       style: pw.TextStyle(
-                          fontSize: 8, fontWeight: pw.FontWeight.bold),
+                          fontSize: 10, fontWeight: pw.FontWeight.bold),
                     ),
                     pw.Text(
                       'Série ${data.serie.padLeft(3, '0')}',
-                      style: pw.TextStyle(
-                          fontSize: 8, fontWeight: pw.FontWeight.bold),
+                      style: pw.TextStyle(fontSize: 8),
                     ),
                     pw.SizedBox(height: 4),
                     pw.Text(
-                      'FL: 1/1',
-                      style: pw.TextStyle(
-                          fontSize: 6, fontWeight: pw.FontWeight.bold),
+                      'Folha 1/1',
+                      style: pw.TextStyle(fontSize: 8),
                     ),
                   ],
                 ),
@@ -448,7 +466,7 @@ class DanfeSefazPrinter {
               flex: 22,
               child: _boxWithLabel(
                 height: 14,
-                label: 'DATA DE EMISSÃO',
+                label: 'DATA DA EMISSÃO',
                 child: _value(data.dataEmissaoFormatada, size: 8),
               ),
             ),
@@ -583,7 +601,7 @@ class DanfeSefazPrinter {
               flex: 58,
               child: _boxWithLabel(
                 height: 14,
-                label: 'NOME / RAZÃO SOCIAL',
+                label: 'NOME/RAZÃO SOCIAL',
                 child: _value(data.destinatario.nome, bold: true, size: 8),
               ),
             ),
@@ -591,7 +609,7 @@ class DanfeSefazPrinter {
               flex: 20,
               child: _boxWithLabel(
                 height: 14,
-                label: 'CNPJ / CPF',
+                label: 'CNPJ/CPF',
                 child: _value(data.destinatario.cnpjFormatado, size: 8),
               ),
             ),
@@ -621,7 +639,7 @@ class DanfeSefazPrinter {
               flex: 20,
               child: _boxWithLabel(
                 height: 14,
-                label: 'BAIRRO / DISTRITO',
+                label: 'BAIRRO/DISTRITO',
                 child: _value(data.destinatario.enderecoBairro ?? '', size: 8),
               ),
             ),
@@ -823,37 +841,25 @@ class DanfeSefazPrinter {
 
     return pw.Column(
       children: [
-        pw.Container(
-          height: 12,
-          decoration: pw.BoxDecoration(
-            border: pw.Border.all(color: PdfColors.black, width: 0.5),
-            color: PdfColors.grey100,
-          ),
-          child: pw.Center(
-            child: pw.Text(
-              'DADOS DOS PRODUTOS / SERVIÇOS',
-              style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold),
-            ),
-          ),
-        ),
+        _buildTabelaItensHeader(),
         pw.TableHelper.fromTextArray(
           border: pw.TableBorder.all(color: PdfColors.black, width: 0.5),
           columnWidths: const {
             0: pw.FlexColumnWidth(8),
-            1: pw.FlexColumnWidth(28),
-            2: pw.FlexColumnWidth(6),
-            3: pw.FlexColumnWidth(4),
-            4: pw.FlexColumnWidth(4),
-            5: pw.FlexColumnWidth(3),
-            6: pw.FlexColumnWidth(6),
-            7: pw.FlexColumnWidth(7),
-            8: pw.FlexColumnWidth(7),
-            9: pw.FlexColumnWidth(6), // Nova coluna VALOR DESC
-            10: pw.FlexColumnWidth(7),
+            1: pw.FlexColumnWidth(30),
+            2: pw.FlexColumnWidth(8),
+            3: pw.FlexColumnWidth(5),
+            4: pw.FlexColumnWidth(5),
+            5: pw.FlexColumnWidth(4),
+            6: pw.FlexColumnWidth(7),
+            7: pw.FlexColumnWidth(8),
+            8: pw.FlexColumnWidth(8),
+            9: pw.FlexColumnWidth(7),
+            10: pw.FlexColumnWidth(8),
             11: pw.FlexColumnWidth(7),
             12: pw.FlexColumnWidth(7),
-            13: pw.FlexColumnWidth(4),
-            14: pw.FlexColumnWidth(4),
+            13: pw.FlexColumnWidth(5),
+            14: pw.FlexColumnWidth(5),
           },
           headerStyle:
               pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 6),
@@ -869,7 +875,7 @@ class DanfeSefazPrinter {
             6: pw.Alignment.centerRight,
             7: pw.Alignment.centerRight,
             8: pw.Alignment.centerRight,
-            9: pw.Alignment.centerRight, // VALOR DESC
+            9: pw.Alignment.centerRight,
             10: pw.Alignment.centerRight,
             11: pw.Alignment.centerRight,
             12: pw.Alignment.centerRight,
@@ -880,6 +886,22 @@ class DanfeSefazPrinter {
           data: allRows,
         )
       ],
+    );
+  }
+
+  pw.Widget _buildTabelaItensHeader() {
+    return pw.Container(
+      height: 12,
+      decoration: pw.BoxDecoration(
+        border: pw.Border.all(color: PdfColors.black, width: 0.5),
+        color: PdfColors.grey100,
+      ),
+      child: pw.Center(
+        child: pw.Text(
+          'DADOS DOS PRODUTOS / SERVIÇOS',
+          style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold),
+        ),
+      ),
     );
   }
 
@@ -913,8 +935,8 @@ class DanfeSefazPrinter {
                 children: [
                   pw.Expanded(
                     child: _boxWithLabel(
-                        height: 12,
-                        label: 'BASE DE CÁLCULO DO ICMS',
+                        height: 14,
+                        label: 'BASE DE CÁLC. DO ICMS',
                         child: _value(
                             data.valorBaseCalculoIcms
                                 .toStringAsFixed(2)
@@ -990,7 +1012,7 @@ class DanfeSefazPrinter {
                   pw.Expanded(
                     child: _boxWithLabel(
                         height: 12,
-                        label: 'VALOR TOTAL DOS PRODUTOS',
+                        label: 'V. TOTAL PRODUTOS',
                         child: _value(
                             data.valorTotalProdutos
                                 .toStringAsFixed(2)
@@ -1080,7 +1102,7 @@ class DanfeSefazPrinter {
                   pw.Expanded(
                     child: _boxWithLabel(
                       height: 16,
-                      label: 'VALOR TOTAL DA NOTA',
+                      label: 'V. TOTAL DA NOTA',
                       child: _value(
                           data.valorTotalNota
                               .toStringAsFixed(2)
@@ -1407,13 +1429,70 @@ class DanfeSefazPrinter {
     }
   }
 
+  pw.Widget _buildIssqn() {
+    return pw.Column(
+      children: [
+        pw.Container(
+          height: 12,
+          decoration: pw.BoxDecoration(
+            border: pw.Border.all(color: PdfColors.black, width: 0.5),
+            color: PdfColors.grey100,
+          ),
+          child: pw.Center(
+            child: pw.Text(
+              'CÁLCULO DO ISSQN',
+              style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold),
+            ),
+          ),
+        ),
+        pw.Row(
+          children: [
+            pw.Expanded(
+              child: _boxWithLabel(
+                  height: 18,
+                  label: 'INSCRIÇÃO MUNICIPAL',
+                  child: _value('', size: 8)),
+            ),
+            pw.Expanded(
+              child: _boxWithLabel(
+                  height: 18,
+                  label: 'V. TOTAL SERVIÇOS',
+                  child: _value('0,00', size: 8, bold: true)),
+            ),
+            pw.Expanded(
+              child: _boxWithLabel(
+                  height: 18,
+                  label: 'BASE CÁLC. ISSQN',
+                  child: _value('0,00', size: 8, bold: true)),
+            ),
+            pw.Expanded(
+              child: _boxWithLabel(
+                  height: 18,
+                  label: 'VALOR DO ISSQN',
+                  child: _value('0,00', size: 8, bold: true)),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  String _formatarNumeroNfe(int numero) {
+    String str = numero.toString().padLeft(9, '0');
+    return '${str.substring(0, 3)}.${str.substring(3, 6)}.${str.substring(6, 9)}';
+  }
+
   pw.Widget _buildFooter() {
     final now = DateTime.now();
+    final dataStr =
+        '${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year}';
+    final horaStr =
+        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
     return pw.Container(
       height: 15,
       child: pw.Center(
         child: pw.Text(
-          'DANFE - Documento Auxiliar da Nota Fiscal Eletrônica - Impresso em ${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}',
+          'DANFE - Documento Auxiliar da Nota Fiscal Eletrônica - Impresso em $dataStr as $horaStr',
           style: pw.TextStyle(fontSize: 6),
         ),
       ),

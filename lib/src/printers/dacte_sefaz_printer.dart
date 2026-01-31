@@ -132,77 +132,48 @@ class DacteSefazPrinter {
   // =========================
 
   pw.Widget _buildCanhotoCte() {
-    return pw.Column(
-      children: [
-        pw.Container(
-          height: 50,
-          decoration: pw.BoxDecoration(
-            border: pw.Border.all(color: PdfColors.black, width: 0.5),
-          ),
-          child: pw.Row(
-            children: [
-              pw.Expanded(
-                flex: 70,
-                child: pw.Padding(
-                  padding: const pw.EdgeInsets.all(4),
-                  child: pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
-                    children: [
-                      pw.Text(
-                        'DECLARO QUE RECEBI OS VOLUMES DESTE CONHECIMENTO EM PERFEITO ESTADO PELO QUE DOU POR CUMPRIDO O PRESENTE CONTRATO DE TRANSPORTE',
-                        style: pw.TextStyle(
-                            fontSize: 6, fontWeight: pw.FontWeight.bold),
-                      ),
-                      pw.SizedBox(height: 4),
-                      pw.Text(
-                        'NOME: _________________________________ RG: _________________ ASSINATURA / CARIMBO: _________________________________',
-                        style: pw.TextStyle(fontSize: 6),
-                      ),
-                      pw.Text(
-                        'TÉRMINO DA PRESTAÇÃO - DATA/HORA: ___/___/______ ___:___ INÍCIO DA PRESTAÇÃO - DATA/HORA: ___/___/______ ___:___',
-                        style: pw.TextStyle(fontSize: 6),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              pw.Container(
-                width: 0.5,
-                color: PdfColors.black,
-              ),
-              pw.Expanded(
-                flex: 30,
-                child: pw.Padding(
-                  padding: const pw.EdgeInsets.all(4),
-                  child: pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
-                    children: [
-                      pw.Text(
-                        'CT-e',
-                        style: pw.TextStyle(
-                            fontSize: 10, fontWeight: pw.FontWeight.bold),
-                      ),
-                      pw.Text(
-                        'Nº ${data.numeroDocumento}',
-                        style: pw.TextStyle(fontSize: 8),
-                      ),
-                      pw.Text(
-                        'Série ${data.serie}',
-                        style: pw.TextStyle(fontSize: 8),
-                      ),
-                      pw.Text(
-                        data.dataEmissaoFormatada,
-                        style: pw.TextStyle(fontSize: 8),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+    return pw.Container(
+      height: 35,
+      decoration: pw.BoxDecoration(
+        border: pw.Border.all(color: PdfColors.black, width: 0.5),
+      ),
+      child: pw.Padding(
+        padding: const pw.EdgeInsets.all(2),
+        child: pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+          children: [
+            pw.Text(
+              'DECLARO QUE RECEBI OS VOLUMES DESTE CONHECIMENTO EM PERFEITO ESTADO PELO QUE DOU POR CUMPRIDO O PRESENTE CONTRATO DE TRANSPORTE',
+              style: pw.TextStyle(fontSize: 6, fontWeight: pw.FontWeight.bold),
+            ),
+            pw.Text(
+              'NOME: _________________ RG: _______ ASSINATURA/CARIMBO: _______',
+              style: pw.TextStyle(fontSize: 6),
+            ),
+            pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              children: [
+                pw.Text(
+                    'TÉRMINO DA PRESTAÇÃO - DATA/HORA: ___/___/______ ___:___',
+                    style: pw.TextStyle(fontSize: 6)),
+                pw.Text(
+                    'INÍCIO DA PRESTAÇÃO - DATA/HORA: ___/___/______ ___:___',
+                    style: pw.TextStyle(fontSize: 6)),
+              ],
+            ),
+            pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              children: [
+                pw.Text(
+                    'CT-e  Nº. ${data.numeroDocumento} Serie ${data.serie}  ${data.dataEmissaoFormatada}',
+                    style: pw.TextStyle(
+                        fontSize: 6, fontWeight: pw.FontWeight.bold)),
+              ],
+            ),
+          ],
         ),
-        pw.SizedBox(height: 5),
-      ],
+      ),
     );
   }
   // =========================
@@ -235,7 +206,7 @@ class DacteSefazPrinter {
                     ),
                     pw.SizedBox(height: 4),
                     pw.Text(
-                      data.emitente.nome,
+                      data.emitente.nome.toUpperCase(),
                       style: pw.TextStyle(
                           fontSize: 10, fontWeight: pw.FontWeight.bold),
                     ),
@@ -249,16 +220,16 @@ class DacteSefazPrinter {
                       style: pw.TextStyle(fontSize: 8),
                     ),
                     pw.Text(
-                      'Telefone/Fax: ${data.emitente.enderecoTelefone ?? ''}',
-                      style: pw.TextStyle(fontSize: 6),
+                      'Fone/Fax: ${data.emitente.enderecoTelefone ?? ''}',
+                      style: pw.TextStyle(fontSize: 8),
                     ),
                     pw.Text(
                       'CNPJ/CPF: ${data.emitente.cnpjFormatado}',
-                      style: pw.TextStyle(fontSize: 6),
+                      style: pw.TextStyle(fontSize: 8),
                     ),
                     pw.Text(
-                      'IE: ${data.emitente.ie ?? ''}',
-                      style: pw.TextStyle(fontSize: 6),
+                      'Insc.Estadual: ${data.emitente.ie ?? ''}',
+                      style: pw.TextStyle(fontSize: 8),
                     ),
                   ],
                 ),
@@ -283,7 +254,7 @@ class DacteSefazPrinter {
                           pw.Text(
                             'DACTE',
                             style: pw.TextStyle(
-                                fontSize: 14, fontWeight: pw.FontWeight.bold),
+                                fontSize: 10, fontWeight: pw.FontWeight.bold),
                           ),
                           pw.Padding(
                             padding:
@@ -315,7 +286,7 @@ class DacteSefazPrinter {
                                 style: pw.TextStyle(fontSize: 7)),
                             pw.Text('FL: 1/1',
                                 style: pw.TextStyle(fontSize: 7)),
-                            pw.Text('DATA E HORA DE EMISSÃO:',
+                            pw.Text('DATA/HORA EMISSÃO:',
                                 style: pw.TextStyle(fontSize: 6)),
                             pw.Text('${data.dataEmissaoFormatada} 10:30:00',
                                 style: pw.TextStyle(fontSize: 7)),
@@ -373,7 +344,7 @@ class DacteSefazPrinter {
                           pw.Expanded(
                             child: pw.Center(
                               child: pw.Text(
-                                _formatarChaveAcesso(data.chaveAcesso),
+                                _formatarChaveAcessoDacte(data.chaveAcesso),
                                 style: pw.TextStyle(
                                     font: pw.Font.courier(),
                                     fontSize: 6,
@@ -481,7 +452,7 @@ class DacteSefazPrinter {
                 child: _boxWithLabel(
                     height: 12,
                     label: 'NOME/RAZÃO SOCIAL',
-                    child: _value(remetente.nome, size: 8))),
+                    child: _value(remetente.nome.toUpperCase(), size: 8))),
             pw.Expanded(
                 flex: 25,
                 child: _boxWithLabel(
@@ -539,8 +510,9 @@ class DacteSefazPrinter {
                 child: _boxWithLabel(
                     height: 12,
                     label: 'PAÍS',
-                    child:
-                        _value(remetente.enderecoPais ?? 'BRASIL', size: 8))),
+                    child: _value(
+                        remetente.enderecoPais?.toUpperCase() ?? 'BRASIL',
+                        size: 8))),
           ],
         ),
       ],
@@ -572,7 +544,7 @@ class DacteSefazPrinter {
                 child: _boxWithLabel(
                     height: 12,
                     label: 'NOME/RAZÃO SOCIAL',
-                    child: _value(destinatario.nome, size: 8))),
+                    child: _value(destinatario.nome.toUpperCase(), size: 8))),
             pw.Expanded(
                 flex: 25,
                 child: _boxWithLabel(
@@ -819,7 +791,7 @@ class DacteSefazPrinter {
                 child: _boxWithLabel(
                     height: 12,
                     label: 'NOME/RAZÃO SOCIAL',
-                    child: _value(tomador.nome, size: 8))),
+                    child: _value(tomador.nome.toUpperCase(), size: 8))),
             pw.Expanded(
                 flex: 25,
                 child: _boxWithLabel(
@@ -1102,91 +1074,60 @@ class DacteSefazPrinter {
           child: pw.Text('COMPONENTES DO VALOR DA PRESTAÇÃO DO SERVIÇO',
               style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold)),
         ),
-        // Layout horizontal dos componentes
         pw.Container(
-          height: 40,
+          height: 30, // Reduzido para ser mais compacto
           decoration: pw.BoxDecoration(
             border: pw.Border.all(color: PdfColors.black, width: 0.5),
           ),
           child: pw.Row(
             children: [
-              // Coluna NOME
-              pw.Expanded(
-                flex: 60,
-                child: pw.Container(
-                  decoration: pw.BoxDecoration(
-                    border: pw.Border(
-                      right: pw.BorderSide(color: PdfColors.black, width: 0.5),
-                    ),
-                  ),
-                  child: pw.Column(
-                    children: [
-                      pw.Container(
-                        height: 8,
-                        color: PdfColors.grey100,
-                        child: pw.Center(
-                          child: pw.Text('NOME',
-                              style: pw.TextStyle(
-                                  fontSize: 6, fontWeight: pw.FontWeight.bold)),
-                        ),
-                      ),
-                      pw.Expanded(
-                        child: pw.Padding(
-                          padding: const pw.EdgeInsets.all(2),
-                          child: pw.Column(
-                            crossAxisAlignment: pw.CrossAxisAlignment.start,
-                            children: [
-                              pw.Text('Frete Peso',
-                                  style: pw.TextStyle(fontSize: 7)),
-                              pw.Text('Frete Valor',
-                                  style: pw.TextStyle(fontSize: 7)),
-                              pw.Text('Sec/Cat (Seguro)',
-                                  style: pw.TextStyle(fontSize: 7)),
-                              pw.Text('Despacho',
-                                  style: pw.TextStyle(fontSize: 7)),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              // Coluna VALOR
-              pw.Expanded(
-                flex: 40,
-                child: pw.Column(
-                  children: [
-                    pw.Container(
-                      height: 8,
-                      color: PdfColors.grey100,
-                      child: pw.Center(
-                        child: pw.Text('VALOR',
-                            style: pw.TextStyle(
-                                fontSize: 6, fontWeight: pw.FontWeight.bold)),
-                      ),
-                    ),
-                    pw.Expanded(
-                      child: pw.Padding(
-                        padding: const pw.EdgeInsets.all(2),
-                        child: pw.Column(
-                          crossAxisAlignment: pw.CrossAxisAlignment.end,
-                          children: [
-                            pw.Text('450,00', style: pw.TextStyle(fontSize: 7)),
-                            pw.Text('30,00', style: pw.TextStyle(fontSize: 7)),
-                            pw.Text('15,00', style: pw.TextStyle(fontSize: 7)),
-                            pw.Text('5,00', style: pw.TextStyle(fontSize: 7)),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              _buildComponenteItem('NOME', 'Frete Peso', flex: 25),
+              _buildComponenteItem('VALOR', '450,00', flex: 15, alignEnd: true),
+              _buildComponenteItem('NOME', 'Frete Valor', flex: 25),
+              _buildComponenteItem('VALOR', '30,00', flex: 15, alignEnd: true),
+              _buildComponenteItem('NOME', 'OUTROS', flex: 10),
+              _buildComponenteItem('VALOR', '0,00', flex: 10, alignEnd: true),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  pw.Widget _buildComponenteItem(String label, String value,
+      {int flex = 1, bool alignEnd = false}) {
+    return pw.Expanded(
+      flex: flex,
+      child: pw.Container(
+        decoration: pw.BoxDecoration(
+          border: pw.Border(
+            right: pw.BorderSide(color: PdfColors.black, width: 0.5),
+          ),
+        ),
+        child: pw.Column(
+          children: [
+            pw.Container(
+              height: 8,
+              width: double.infinity,
+              color: PdfColors.grey100,
+              child: pw.Center(
+                child: pw.Text(label,
+                    style: pw.TextStyle(
+                        fontSize: 6, fontWeight: pw.FontWeight.bold)),
+              ),
+            ),
+            pw.Expanded(
+              child: pw.Container(
+                alignment: alignEnd
+                    ? pw.Alignment.centerRight
+                    : pw.Alignment.centerLeft,
+                padding: const pw.EdgeInsets.symmetric(horizontal: 2),
+                child: pw.Text(value, style: pw.TextStyle(fontSize: 7)),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -1482,7 +1423,8 @@ class DacteSefazPrinter {
                   label: 'VALOR DO SERVIÇO',
                   child: _value(
                       'R\$ ${data.valorTotalNota.toStringAsFixed(2).replaceAll('.', ',')}',
-                      size: 8)),
+                      size: 8,
+                      bold: true)),
             ),
           ],
         ),
@@ -1606,21 +1548,24 @@ class DacteSefazPrinter {
   // MÉTODOS AUXILIARES
   // =========================
 
-  String _formatarChaveAcesso(String chave) {
+  String _formatarChaveAcessoDacte(String chave) {
     if (chave.length != 44) return chave;
-    return '${chave.substring(0, 4)} ${chave.substring(4, 8)} ${chave.substring(8, 12)} ${chave.substring(12, 16)} ${chave.substring(16, 20)} ${chave.substring(20, 24)} ${chave.substring(24, 28)} ${chave.substring(28, 32)} ${chave.substring(32, 36)} ${chave.substring(36, 40)} ${chave.substring(40, 44)}';
+    // Formato SEFAZ DACTE: XX.AAMM.CNPJ-MM-SSS-NNNNNNNN-DV
+    return '${chave.substring(0, 2)}.${chave.substring(2, 6)}.${chave.substring(6, 20)}-${chave.substring(20, 22)}-${chave.substring(22, 25)}-${chave.substring(25, 43)}-${chave.substring(43, 44)}';
   }
 
   pw.Widget _buildFooter() {
     final now = DateTime.now();
-    final dataHora =
-        '${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year} às ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+    final dataStr =
+        '${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year}';
+    final horaStr =
+        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
 
     return pw.Container(
       height: 15,
       child: pw.Center(
         child: pw.Text(
-          'DACTE - Documento Auxiliar do Conhecimento de Transporte Eletrônico - Impresso em $dataHora',
+          'DACTE - Documento Auxiliar do Conhecimento de Transporte Eletrônico - Impresso em $dataStr as $horaStr',
           style: pw.TextStyle(fontSize: 6),
         ),
       ),
