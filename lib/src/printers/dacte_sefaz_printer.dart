@@ -16,21 +16,21 @@ class DacteSefazPrinter {
         margin: const pw.EdgeInsets.all(
             8), // Margem reduzida para melhor aproveitamento
         build: (context) => [
-          _buildCanhotoCte(), // Canhoto superior do CT-e
+          _buildCanhotoCte(),
           _buildHeader(),
-          _buildTipoFields(), // Nova seção para TIPO DO CTE, TIPO DO SERVIÇO, TOMADOR
           _buildRemetente(),
           _buildDestinatario(),
           _buildExpedidor(),
           _buildRecebedor(),
-          _buildTomadorServico(), // Seção que estava faltando
+          _buildTomadorServico(),
           _buildDadosCte(),
           _buildDocumentosOriginarios(), // Nova seção adicionada
           _buildComponentesValor(),
           _buildImposto(),
           _buildValores(),
           _buildCarga(),
-          _buildModalRodoviario(), // Seção específica do modal rodoviário
+          _buildSeguro(),
+          _buildModalRodoviario(),
           _buildReservadoFisco(), // Nova seção adicionada
           _buildDadosAdicionais(),
         ],
@@ -224,7 +224,7 @@ class DacteSefazPrinter {
                       style: pw.TextStyle(fontSize: 8),
                     ),
                     pw.Text(
-                      'CNPJ/CPF: ${data.emitente.cnpjFormatado}',
+                      'CNPJ / CPF: ${data.emitente.cnpjFormatado}',
                       style: pw.TextStyle(fontSize: 8),
                     ),
                     pw.Text(
@@ -286,12 +286,14 @@ class DacteSefazPrinter {
                                 style: pw.TextStyle(fontSize: 7)),
                             pw.Text('FL: 1/1',
                                 style: pw.TextStyle(fontSize: 7)),
+                            pw.Text('TIPO DO CT-e: 0 - NORMAL',
+                                style: pw.TextStyle(fontSize: 7)),
+                            pw.Text('TIPO DO SERVIÇO: 0 - NORMAL',
+                                style: pw.TextStyle(fontSize: 7)),
                             pw.Text('DATA/HORA EMISSÃO:',
                                 style: pw.TextStyle(fontSize: 6)),
                             pw.Text('${data.dataEmissaoFormatada} 10:30:00',
                                 style: pw.TextStyle(fontSize: 7)),
-                            pw.Text('INSC. SUFRAMA DO DESTINATÁRIO:',
-                                style: pw.TextStyle(fontSize: 6)),
                           ],
                         ),
                       ),
@@ -347,7 +349,7 @@ class DacteSefazPrinter {
                                 _formatarChaveAcessoDacte(data.chaveAcesso),
                                 style: pw.TextStyle(
                                     font: pw.Font.courier(),
-                                    fontSize: 6,
+                                    fontSize: 8,
                                     fontWeight: pw.FontWeight.bold),
                                 textAlign: pw.TextAlign.center,
                               ),
@@ -384,43 +386,15 @@ class DacteSefazPrinter {
               child: _boxWithLabel(
                 height: 16,
                 label: 'PROTOCOLO DE AUTORIZAÇÃO DE USO',
-                child: _value(
-                    '135240000000000 ${data.dataEmissaoFormatada} 10:30:00',
-                    size: 8),
+                child: pw.Align(
+                  alignment: pw.Alignment.centerLeft,
+                  child: _value(
+                      '135240000000000 - ${data.dataEmissaoFormatada} 10:30:00',
+                      size: 8),
+                ),
               ),
             ),
           ],
-        ),
-      ],
-    );
-  }
-
-  // =========================
-  // CAMPOS TIPO (NOVA SEÇÃO)
-  // =========================
-  pw.Widget _buildTipoFields() {
-    return pw.Row(
-      children: [
-        pw.Expanded(
-            flex: 65, child: pw.Container()), // Espaço vazio para alinhamento
-        pw.Expanded(
-          flex: 35,
-          child: pw.Column(
-            children: [
-              _boxWithLabel(
-                  height: 12,
-                  label: 'TIPO DO CTE',
-                  child: _value('0 - Normal', size: 8)),
-              _boxWithLabel(
-                  height: 12,
-                  label: 'TIPO DO SERVIÇO',
-                  child: _value('0 - Normal', size: 8)),
-              _boxWithLabel(
-                  height: 12,
-                  label: 'TOMADOR DO SERVIÇO',
-                  child: _value('3 - Destinatário', size: 8)),
-            ],
-          ),
         ),
       ],
     );
@@ -451,13 +425,13 @@ class DacteSefazPrinter {
                 flex: 45,
                 child: _boxWithLabel(
                     height: 12,
-                    label: 'NOME/RAZÃO SOCIAL',
+                    label: 'NOME / RAZÃO SOCIAL',
                     child: _value(remetente.nome.toUpperCase(), size: 8))),
             pw.Expanded(
                 flex: 25,
                 child: _boxWithLabel(
                     height: 12,
-                    label: 'CNPJ/CPF',
+                    label: 'CNPJ / CPF',
                     child: _value(remetente.cnpjFormatado, size: 8))),
             pw.Expanded(
                 flex: 30,
@@ -481,7 +455,7 @@ class DacteSefazPrinter {
                 flex: 40,
                 child: _boxWithLabel(
                     height: 12,
-                    label: 'BAIRRO/DISTRITO',
+                    label: 'BAIRRO / DISTRITO',
                     child: _value(remetente.enderecoBairro ?? '', size: 8))),
           ],
         ),
@@ -543,13 +517,13 @@ class DacteSefazPrinter {
                 flex: 45,
                 child: _boxWithLabel(
                     height: 12,
-                    label: 'NOME/RAZÃO SOCIAL',
+                    label: 'NOME / RAZÃO SOCIAL',
                     child: _value(destinatario.nome.toUpperCase(), size: 8))),
             pw.Expanded(
                 flex: 25,
                 child: _boxWithLabel(
                     height: 12,
-                    label: 'CNPJ/CPF',
+                    label: 'CNPJ / CPF',
                     child: _value(destinatario.cnpjFormatado, size: 8))),
             pw.Expanded(
                 flex: 30,
@@ -573,7 +547,7 @@ class DacteSefazPrinter {
                 flex: 40,
                 child: _boxWithLabel(
                     height: 12,
-                    label: 'BAIRRO/DISTRITO',
+                    label: 'BAIRRO / DISTRITO',
                     child: _value(destinatario.enderecoBairro ?? '', size: 8))),
           ],
         ),
@@ -634,12 +608,14 @@ class DacteSefazPrinter {
                 flex: 45,
                 child: _boxWithLabel(
                     height: 12,
-                    label: 'NOME/RAZÃO SOCIAL',
+                    label: 'NOME / RAZÃO SOCIAL',
                     child: _value('', size: 8))),
             pw.Expanded(
                 flex: 25,
                 child: _boxWithLabel(
-                    height: 12, label: 'CNPJ/CPF', child: _value('', size: 8))),
+                    height: 12,
+                    label: 'CNPJ / CPF',
+                    child: _value('', size: 8))),
             pw.Expanded(
                 flex: 30,
                 child: _boxWithLabel(
@@ -658,7 +634,7 @@ class DacteSefazPrinter {
                 flex: 40,
                 child: _boxWithLabel(
                     height: 12,
-                    label: 'BAIRRO/DISTRITO',
+                    label: 'BAIRRO / DISTRITO',
                     child: _value('', size: 8))),
           ],
         ),
@@ -711,12 +687,14 @@ class DacteSefazPrinter {
                 flex: 45,
                 child: _boxWithLabel(
                     height: 12,
-                    label: 'NOME/RAZÃO SOCIAL',
+                    label: 'NOME / RAZÃO SOCIAL',
                     child: _value('', size: 8))),
             pw.Expanded(
                 flex: 25,
                 child: _boxWithLabel(
-                    height: 12, label: 'CNPJ/CPF', child: _value('', size: 8))),
+                    height: 12,
+                    label: 'CNPJ / CPF',
+                    child: _value('', size: 8))),
             pw.Expanded(
                 flex: 30,
                 child: _boxWithLabel(
@@ -735,7 +713,7 @@ class DacteSefazPrinter {
                 flex: 40,
                 child: _boxWithLabel(
                     height: 12,
-                    label: 'BAIRRO/DISTRITO',
+                    label: 'BAIRRO / DISTRITO',
                     child: _value('', size: 8))),
           ],
         ),
@@ -790,13 +768,13 @@ class DacteSefazPrinter {
                 flex: 45,
                 child: _boxWithLabel(
                     height: 12,
-                    label: 'NOME/RAZÃO SOCIAL',
+                    label: 'NOME / RAZÃO SOCIAL',
                     child: _value(tomador.nome.toUpperCase(), size: 8))),
             pw.Expanded(
                 flex: 25,
                 child: _boxWithLabel(
                     height: 12,
-                    label: 'CNPJ/CPF',
+                    label: 'CNPJ / CPF',
                     child: _value(tomador.cnpjFormatado, size: 8))),
             pw.Expanded(
                 flex: 30,
@@ -820,7 +798,7 @@ class DacteSefazPrinter {
                 flex: 40,
                 child: _boxWithLabel(
                     height: 12,
-                    label: 'BAIRRO/DISTRITO',
+                    label: 'BAIRRO / DISTRITO',
                     child: _value(tomador.enderecoBairro ?? '', size: 8))),
           ],
         ),
@@ -905,155 +883,52 @@ class DacteSefazPrinter {
           child: pw.Text('DOCUMENTOS ORIGINÁRIOS',
               style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold)),
         ),
-        pw.Container(
-          height: 30,
-          decoration: pw.BoxDecoration(
-            border: pw.Border.all(color: PdfColors.black, width: 0.5),
-          ),
-          child: pw.Row(
-            children: [
-              pw.Expanded(
-                flex: 15,
-                child: pw.Container(
-                  decoration: pw.BoxDecoration(
-                    border: pw.Border(
-                      right: pw.BorderSide(color: PdfColors.black, width: 0.5),
-                    ),
-                  ),
-                  child: pw.Column(
-                    children: [
-                      pw.Container(
-                        height: 8,
-                        color: PdfColors.grey100,
-                        child: pw.Center(
-                          child: pw.Text('TIPO DOC',
-                              style: pw.TextStyle(
-                                  fontSize: 6, fontWeight: pw.FontWeight.bold)),
-                        ),
-                      ),
-                      pw.Expanded(
-                        child: pw.Center(
-                          child:
-                              pw.Text('NFe', style: pw.TextStyle(fontSize: 8)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              pw.Expanded(
-                flex: 20,
-                child: pw.Container(
-                  decoration: pw.BoxDecoration(
-                    border: pw.Border(
-                      right: pw.BorderSide(color: PdfColors.black, width: 0.5),
-                    ),
-                  ),
-                  child: pw.Column(
-                    children: [
-                      pw.Container(
-                        height: 8,
-                        color: PdfColors.grey100,
-                        child: pw.Center(
-                          child: pw.Text('CNPJ/CPF EMITENTE',
-                              style: pw.TextStyle(
-                                  fontSize: 6, fontWeight: pw.FontWeight.bold)),
-                        ),
-                      ),
-                      pw.Expanded(
-                        child: pw.Center(
-                          child: pw.Text(data.emitente.cnpjFormatado,
-                              style: pw.TextStyle(fontSize: 8)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              pw.Expanded(
-                flex: 15,
-                child: pw.Container(
-                  decoration: pw.BoxDecoration(
-                    border: pw.Border(
-                      right: pw.BorderSide(color: PdfColors.black, width: 0.5),
-                    ),
-                  ),
-                  child: pw.Column(
-                    children: [
-                      pw.Container(
-                        height: 8,
-                        color: PdfColors.grey100,
-                        child: pw.Center(
-                          child: pw.Text('SÉRIE',
-                              style: pw.TextStyle(
-                                  fontSize: 6, fontWeight: pw.FontWeight.bold)),
-                        ),
-                      ),
-                      pw.Expanded(
-                        child: pw.Center(
-                          child: pw.Text('1', style: pw.TextStyle(fontSize: 8)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              pw.Expanded(
-                flex: 15,
-                child: pw.Container(
-                  decoration: pw.BoxDecoration(
-                    border: pw.Border(
-                      right: pw.BorderSide(color: PdfColors.black, width: 0.5),
-                    ),
-                  ),
-                  child: pw.Column(
-                    children: [
-                      pw.Container(
-                        height: 8,
-                        color: PdfColors.grey100,
-                        child: pw.Center(
-                          child: pw.Text('NRO. DOC',
-                              style: pw.TextStyle(
-                                  fontSize: 6, fontWeight: pw.FontWeight.bold)),
-                        ),
-                      ),
-                      pw.Expanded(
-                        child: pw.Center(
-                          child: pw.Text('123456',
-                              style: pw.TextStyle(fontSize: 8)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              pw.Expanded(
-                flex: 35,
-                child: pw.Column(
-                  children: [
-                    pw.Container(
-                      height: 8,
-                      color: PdfColors.grey100,
-                      child: pw.Center(
-                        child: pw.Text('CHAVE DE ACESSO',
-                            style: pw.TextStyle(
-                                fontSize: 6, fontWeight: pw.FontWeight.bold)),
-                      ),
-                    ),
-                    pw.Expanded(
-                      child: pw.Center(
-                        child: pw.Text(
-                            '5523 1234 5678 9012 3456 7890 1234 5678 9012 3456 7890',
-                            style: pw.TextStyle(fontSize: 6)),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+        pw.Table(
+          border: pw.TableBorder.all(color: PdfColors.black, width: 0.5),
+          children: [
+            pw.TableRow(
+              decoration: const pw.BoxDecoration(color: PdfColors.grey100),
+              children: [
+                _tableHeaderCell('TIPO DOC'),
+                _tableHeaderCell('CNPJ / CPF EMITENTE'),
+                _tableHeaderCell('SÉRIE'),
+                _tableHeaderCell('NRO. DOC'),
+                _tableHeaderCell('CHAVE DE ACESSO'),
+              ],
+            ),
+            pw.TableRow(
+              children: [
+                _tableCell('NFe'),
+                _tableCell(data.emitente.cnpjFormatado),
+                _tableCell('1'),
+                _tableCell('123456'),
+                _tableCell(
+                    '5523 1234 5678 9012 3456 7890 1234 5678 9012 3456 7890',
+                    size: 6),
+              ],
+            ),
+          ],
         ),
       ],
+    );
+  }
+
+  pw.Widget _tableHeaderCell(String text) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.all(1),
+      child: pw.Center(
+        child: pw.Text(text,
+            style: pw.TextStyle(fontSize: 6, fontWeight: pw.FontWeight.bold)),
+      ),
+    );
+  }
+
+  pw.Widget _tableCell(String text, {double size = 7}) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.all(1),
+      child: pw.Center(
+        child: pw.Text(text, style: pw.TextStyle(fontSize: size)),
+      ),
     );
   }
 
@@ -1262,111 +1137,108 @@ class DacteSefazPrinter {
         pw.Row(
           children: [
             pw.Expanded(
-              flex: 50,
+              flex: 40,
               child: _boxWithLabel(
-                  height: 12,
+                  height: 14,
                   label: 'PRODUTO PREDOMINANTE',
-                  child: _value(data.itens.first.descricaoProduto, size: 8)),
+                  child: _value(
+                      data.itens.isNotEmpty
+                          ? data.itens.first.descricaoProduto
+                          : '',
+                      size: 7)),
             ),
             pw.Expanded(
-              flex: 25,
+              flex: 30,
               child: _boxWithLabel(
-                  height: 12,
+                  height: 14,
                   label: 'OUTRAS CARACTERÍSTICAS DA CARGA',
-                  child: _value('', size: 8)),
+                  child: _value('', size: 7)),
             ),
             pw.Expanded(
-              flex: 25,
+              flex: 30,
               child: _boxWithLabel(
-                  height: 12,
+                  height: 14,
                   label: 'VALOR TOTAL DA MERCADORIA',
                   child: _value(
                       data.valorTotalProdutos
                           .toStringAsFixed(2)
                           .replaceAll('.', ','),
-                      size: 8)),
+                      size: 7)),
             ),
           ],
-        ),
-        // Tabela de Peso/Cubagem
-        pw.Container(
-          height: 10,
-          decoration: pw.BoxDecoration(
-            border: pw.Border.all(color: PdfColors.black, width: 0.5),
-            color: PdfColors.grey100,
-          ),
-          child: pw.Center(
-            child: pw.Text(
-              'PESO / CUBAGEM',
-              style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold),
-            ),
-          ),
         ),
         pw.Row(
           children: [
             pw.Expanded(
               child: _boxWithLabel(
-                  height: 12,
-                  label: 'PESO TOTAL (KG)',
+                  height: 14,
+                  label: 'TP MED / UN. MED',
+                  child: _value('PESO / KG', size: 7)),
+            ),
+            pw.Expanded(
+              child: _boxWithLabel(
+                  height: 14,
+                  label: 'PESO BRUTO (KG)',
                   child: _value(
-                      data.transporte.pesoBruto?.toStringAsFixed(3) ?? '0,000',
-                      size: 8)),
+                      data.transporte.pesoBruto
+                              ?.toStringAsFixed(3)
+                              .replaceAll('.', ',') ??
+                          '0,000',
+                      size: 7)),
             ),
             pw.Expanded(
               child: _boxWithLabel(
-                  height: 12,
-                  label: 'CUBAGEM (M³)',
-                  child: _value('0,000', size: 8)),
-            ),
-            pw.Expanded(
-              child: _boxWithLabel(
-                  height: 12,
-                  label: 'TP MED /UN. MED',
-                  child: _value('PESO/KG', size: 8)),
-            ),
-            pw.Expanded(
-              child: _boxWithLabel(
-                  height: 12,
-                  label: 'VOLUMES',
+                  height: 14,
+                  label: 'QTDE (VOL)',
                   child: _value(data.transporte.quantidadeVolumes ?? '1',
-                      size: 8)),
+                      size: 7)),
             ),
             pw.Expanded(
               child: _boxWithLabel(
-                  height: 12,
-                  label: 'QTDE(VOL)',
-                  child: _value(data.transporte.quantidadeVolumes ?? '1',
-                      size: 8)),
+                  height: 14,
+                  label: 'CUBAGEM (M3)',
+                  child: _value('0,000', size: 7)),
             ),
           ],
         ),
-        // Seção de Seguro
+      ],
+    );
+  }
+
+  pw.Widget _buildSeguro() {
+    return pw.Column(
+      children: [
         pw.Container(
           height: 10,
+          width: double.infinity,
           decoration: pw.BoxDecoration(
             border: pw.Border.all(color: PdfColors.black, width: 0.5),
             color: PdfColors.grey100,
           ),
-          child: pw.Center(
-            child: pw.Text(
-              'SEGURO',
-              style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold),
-            ),
-          ),
+          alignment: pw.Alignment.center,
+          child: pw.Text('INFORMAÇÕES DO SEGURO',
+              style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold)),
         ),
         pw.Row(
           children: [
             pw.Expanded(
+              flex: 40,
               child: _boxWithLabel(
-                  height: 12, label: 'SEGURADORA', child: _value('', size: 8)),
+                  height: 14,
+                  label: 'RESPONSÁVEL',
+                  child: _value('4-REMETENTE', size: 7)),
             ),
             pw.Expanded(
+              flex: 30,
               child: _boxWithLabel(
-                  height: 12, label: 'APÓLICE', child: _value('', size: 8)),
+                  height: 14, label: 'SEGURADORA', child: _value('', size: 7)),
             ),
             pw.Expanded(
+              flex: 30,
               child: _boxWithLabel(
-                  height: 12, label: 'AVERBAÇÃO', child: _value('', size: 8)),
+                  height: 14,
+                  label: 'NÚMERO DA APÓLICE',
+                  child: _value('', size: 7)),
             ),
           ],
         ),
@@ -1388,7 +1260,7 @@ class DacteSefazPrinter {
           ),
           child: pw.Center(
             child: pw.Text(
-              'DADOS ESPECÍFICOS DO MODAL RODOVIÁRIO - CARGA FRACIONADA',
+              'DADOS ESPECÍFICOS DO MODAL RODOVIÁRIO',
               style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold),
             ),
           ),
@@ -1396,35 +1268,20 @@ class DacteSefazPrinter {
         pw.Row(
           children: [
             pw.Expanded(
-              flex: 20,
               child: _boxWithLabel(
-                  height: 12,
-                  label: 'RNTRC DA EMPRESA',
+                  height: 14,
+                  label: 'RNTRC DO TRANSPORTADOR',
                   child: _value(data.transporte.rntcVeiculo ?? '', size: 8)),
             ),
             pw.Expanded(
-              flex: 30,
               child: _boxWithLabel(
-                  height: 12,
-                  label: 'ESTE CT-E É DE COMPLEMENTO DE VALORES',
-                  child: _value('Não', size: 8)),
+                  height: 14, label: 'CIOT', child: _value('', size: 8)),
             ),
             pw.Expanded(
-              flex: 25,
               child: _boxWithLabel(
-                  height: 12,
-                  label: 'CHAVE DO CT-E COMPLEMENTADO',
-                  child: _value('', size: 8)),
-            ),
-            pw.Expanded(
-              flex: 25,
-              child: _boxWithLabel(
-                  height: 12,
-                  label: 'VALOR DO SERVIÇO',
-                  child: _value(
-                      'R\$ ${data.valorTotalNota.toStringAsFixed(2).replaceAll('.', ',')}',
-                      size: 8,
-                      bold: true)),
+                  height: 14,
+                  label: 'DATA PREVISTA DE ENTREGA',
+                  child: _value(data.dataEmissaoFormatada, size: 8)),
             ),
           ],
         ),

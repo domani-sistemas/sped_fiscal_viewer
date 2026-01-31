@@ -20,7 +20,7 @@ class SpedPdfViewer extends StatelessWidget {
         title: Text(fileName),
         actions: [
           IconButton(
-            icon: const Icon(Icons.share),
+            icon: Icon(Icons.picture_as_pdf),
             tooltip: 'Exportar/Compartilhar',
             onPressed: () async {
               final pdfBytes = await buildPdf(PdfPageFormat.a4);

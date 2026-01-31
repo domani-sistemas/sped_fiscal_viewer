@@ -24,7 +24,6 @@ class DanfeSefazPrinter {
           _buildTotais(),
           _buildTransporte(),
           _buildTabelaItens(),
-          _buildIssqn(),
           _buildDadosAdicionaisFisco(),
         ],
         footer: (context) => _buildFooter(),
@@ -101,6 +100,7 @@ class DanfeSefazPrinter {
                           fontSize: 8, fontWeight: pw.FontWeight.bold)),
                   pw.Text('Série ${data.serie.padLeft(3, '0')}',
                       style: pw.TextStyle(fontSize: 8)),
+                  pw.Text('Folha 1/1', style: pw.TextStyle(fontSize: 8)),
                 ],
               ),
             ),
@@ -305,21 +305,13 @@ class DanfeSefazPrinter {
                         ),
                       ],
                     ),
-                    pw.SizedBox(height: 8),
-                    pw.Text(
-                      'Nº. ${_formatarNumeroNfe(data.numeroDocumento)}',
-                      style: pw.TextStyle(
-                          fontSize: 10, fontWeight: pw.FontWeight.bold),
-                    ),
-                    pw.Text(
-                      'Série ${data.serie.padLeft(3, '0')}',
-                      style: pw.TextStyle(fontSize: 8),
-                    ),
                     pw.SizedBox(height: 4),
-                    pw.Text(
-                      'Folha 1/1',
-                      style: pw.TextStyle(fontSize: 8),
-                    ),
+                    pw.Text('Nº. ${_formatarNumeroNfe(data.numeroDocumento)}',
+                        style: pw.TextStyle(
+                            fontSize: 10, fontWeight: pw.FontWeight.bold)),
+                    pw.Text('Série ${data.serie.padLeft(3, '0')}',
+                        style: pw.TextStyle(fontSize: 8)),
+                    pw.Text('Folha 1/1', style: pw.TextStyle(fontSize: 8)),
                   ],
                 ),
               ),
@@ -414,7 +406,7 @@ class DanfeSefazPrinter {
                 height: 16,
                 label: 'PROTOCOLO DE AUTORIZAÇÃO DE USO',
                 child: _value(
-                    '135240000000000 ${data.dataEmissaoFormatada} 10:30:00',
+                    '135240000000000 - ${data.dataEmissaoFormatada} 10:30:00',
                     size: 8),
               ),
             ),
@@ -601,7 +593,7 @@ class DanfeSefazPrinter {
               flex: 58,
               child: _boxWithLabel(
                 height: 14,
-                label: 'NOME/RAZÃO SOCIAL',
+                label: 'NOME / RAZÃO SOCIAL',
                 child: _value(data.destinatario.nome, bold: true, size: 8),
               ),
             ),
@@ -609,7 +601,7 @@ class DanfeSefazPrinter {
               flex: 20,
               child: _boxWithLabel(
                 height: 14,
-                label: 'CNPJ/CPF',
+                label: 'CNPJ / CPF',
                 child: _value(data.destinatario.cnpjFormatado, size: 8),
               ),
             ),
@@ -639,7 +631,7 @@ class DanfeSefazPrinter {
               flex: 20,
               child: _boxWithLabel(
                 height: 14,
-                label: 'BAIRRO/DISTRITO',
+                label: 'BAIRRO / DISTRITO',
                 child: _value(data.destinatario.enderecoBairro ?? '', size: 8),
               ),
             ),
@@ -790,116 +782,188 @@ class DanfeSefazPrinter {
   // TABELA DE ITENS
   // =========================
 
+  double _calcularAlturaDisponivel() {
+    const double alturaA4 = 841.89;
+    const double margemTotal = 16.0;
+    const double alturaCanhoto = 50.0;
+    const double alturaHeader = 100.0;
+    const double alturaDestinatario = 70.0;
+    const double alturaLocalEntrega = 0.0;
+    const double alturaFaturas = 26.0;
+    const double alturaTotais = 90.0;
+    const double alturaTransporte = 55.0;
+    const double alturaDadosAdicionais = 50.0;
+    const double alturaFooter = 15.0;
+
+    double alturaFixa = margemTotal +
+        alturaCanhoto +
+        alturaHeader +
+        alturaDestinatario +
+        alturaLocalEntrega +
+        alturaFaturas +
+        alturaTotais +
+        alturaTransporte +
+        alturaDadosAdicionais +
+        alturaFooter;
+
+    return (alturaA4 - alturaFixa).clamp(200.0, 400.0);
+  }
+
   pw.Widget _buildTabelaItens() {
-    const maxItensPerPage = 15;
+    final alturaDisponivel = _calcularAlturaDisponivel();
+    const double alturaHeaderTable = 20.0;
+    const double alturaIdealPorLinha = 18.0;
     final itens = data.itens;
-    final itensCount = itens.length;
-    final emptyRows =
-        itensCount < maxItensPerPage ? maxItensPerPage - itensCount : 0;
+    final numProdutos = itens.length;
+    final alturaOcupadaPorProdutos = numProdutos * alturaIdealPorLinha;
+    final alturaEspacoVazio =
+        alturaDisponivel - alturaHeaderTable - alturaOcupadaPorProdutos;
 
-    final headers = [
-      'CÓD. PRODUTO',
-      'DESCRIÇÃO DO PRODUTO / SERVIÇO',
-      'NCM/SH',
-      'O/CST',
-      'CFOP',
-      'UN',
-      'QUANT',
-      'VALOR UNIT',
-      'VALOR TOTAL',
-      'VALOR DESC',
-      'B.CÁLC ICMS',
-      'VALOR ICMS',
-      'VALOR IPI',
-      'ALÍQ ICMS',
-      'ALÍQ IPI',
-    ];
-
-    var allRows = itens.map((item) {
-      return [
-        item.codigoProduto ?? '',
-        item.descricaoProduto,
-        item.ncm ?? '',
-        '0${item.cst ?? '00'}', // Adiciona origem "0" + CST
-        item.cfop.toString(),
-        item.unidade,
-        item.quantidade.toStringAsFixed(4).replaceAll('.', ','),
-        item.valorUnitario.toStringAsFixed(4).replaceAll('.', ','),
-        item.valorTotalItem.toStringAsFixed(2).replaceAll('.', ','),
-        '0,00', // Valor desconto - placeholder
-        (item.baseCalculoIcms ?? 0.0).toStringAsFixed(2).replaceAll('.', ','),
-        (item.valorIcms ?? 0.0).toStringAsFixed(2).replaceAll('.', ','),
-        (item.valorIpi ?? 0.0).toStringAsFixed(2).replaceAll('.', ','),
-        (item.aliquotaIcms ?? 0.0).toStringAsFixed(2).replaceAll('.', ','),
-        (item.aliquotaIpi ?? 0.0).toStringAsFixed(2).replaceAll('.', ','),
-      ];
-    }).toList();
-
-    for (int i = 0; i < emptyRows; i++) {
-      allRows.add(List.filled(15, '')); // Agora são 15 colunas
-    }
-
-    return pw.Column(
-      children: [
-        _buildTabelaItensHeader(),
-        pw.TableHelper.fromTextArray(
-          border: pw.TableBorder.all(color: PdfColors.black, width: 0.5),
-          columnWidths: const {
-            0: pw.FlexColumnWidth(8),
-            1: pw.FlexColumnWidth(30),
-            2: pw.FlexColumnWidth(8),
-            3: pw.FlexColumnWidth(5),
-            4: pw.FlexColumnWidth(5),
-            5: pw.FlexColumnWidth(4),
-            6: pw.FlexColumnWidth(7),
-            7: pw.FlexColumnWidth(8),
-            8: pw.FlexColumnWidth(8),
-            9: pw.FlexColumnWidth(7),
-            10: pw.FlexColumnWidth(8),
-            11: pw.FlexColumnWidth(7),
-            12: pw.FlexColumnWidth(7),
-            13: pw.FlexColumnWidth(5),
-            14: pw.FlexColumnWidth(5),
-          },
-          headerStyle:
-              pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 6),
-          cellStyle: const pw.TextStyle(fontSize: 6),
-          cellPadding: const pw.EdgeInsets.all(1),
-          cellAlignments: {
-            0: pw.Alignment.centerLeft,
-            1: pw.Alignment.centerLeft,
-            2: pw.Alignment.center,
-            3: pw.Alignment.center,
-            4: pw.Alignment.center,
-            5: pw.Alignment.center,
-            6: pw.Alignment.centerRight,
-            7: pw.Alignment.centerRight,
-            8: pw.Alignment.centerRight,
-            9: pw.Alignment.centerRight,
-            10: pw.Alignment.centerRight,
-            11: pw.Alignment.centerRight,
-            12: pw.Alignment.centerRight,
-            13: pw.Alignment.center,
-            14: pw.Alignment.center,
-          },
-          headers: headers,
-          data: allRows,
-        )
-      ],
+    return pw.Container(
+      height: alturaDisponivel,
+      padding: const pw.EdgeInsets.symmetric(vertical: 0),
+      child: pw.Column(
+        children: [
+          _buildTabelaItensHeaderCustom(),
+          ...itens.map((item) => _buildLinhaProduto(item, alturaIdealPorLinha)),
+          if (alturaEspacoVazio > 0)
+            pw.Expanded(
+              child: pw.Container(
+                decoration: pw.BoxDecoration(
+                  border: pw.Border(
+                    left: pw.BorderSide(color: PdfColors.black, width: 0.5),
+                    right: pw.BorderSide(color: PdfColors.black, width: 0.5),
+                    bottom: pw.BorderSide(color: PdfColors.black, width: 0.5),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
-  pw.Widget _buildTabelaItensHeader() {
+  pw.Widget _buildTabelaItensHeaderCustom() {
     return pw.Container(
-      height: 12,
+      height: 20,
       decoration: pw.BoxDecoration(
-        border: pw.Border.all(color: PdfColors.black, width: 0.5),
         color: PdfColors.grey100,
+        border: pw.Border.all(color: PdfColors.black, width: 0.5),
       ),
-      child: pw.Center(
+      child: pw.Row(
+        children: [
+          _headerCell('CÓD.\nPROD.', 8),
+          _headerCell('DESCRIÇÃO DO PRODUTO / SERVIÇO', 30),
+          _headerCell('NCM/SH', 8),
+          _headerCell('CST', 4),
+          _headerCell('CFOP', 4),
+          _headerCell('UN', 3),
+          _headerCell('QUANT.', 7),
+          _headerCell('VALOR\nUNIT.', 8),
+          _headerCell('VALOR\nTOTAL', 8),
+          _headerCell('VALOR\nDESC.', 6),
+          _headerCell('B.CÁLC\nICMS', 8),
+          _headerCell('VALOR\nICMS', 8),
+          _headerCell('VALOR\nIPI', 6),
+          _headerCell('ALÍQ.\nICMS', 4),
+          _headerCell('ALÍQ.\nIPI', 4),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _headerCell(String text, int flex) {
+    return pw.Expanded(
+      flex: flex,
+      child: pw.Container(
+        height: 20,
+        decoration: pw.BoxDecoration(
+          border: pw.Border(
+            right: pw.BorderSide(color: PdfColors.black, width: 0.5),
+          ),
+        ),
+        padding: const pw.EdgeInsets.all(1),
+        child: pw.Center(
+          child: pw.Text(
+            text,
+            textAlign: pw.TextAlign.center,
+            style: pw.TextStyle(fontSize: 6, fontWeight: pw.FontWeight.bold),
+          ),
+        ),
+      ),
+    );
+  }
+
+  pw.Widget _buildLinhaProduto(item, double altura) {
+    return pw.Container(
+      height: altura,
+      decoration: pw.BoxDecoration(
+        border: pw.Border(
+          left: pw.BorderSide(color: PdfColors.black, width: 0.5),
+          right: pw.BorderSide(color: PdfColors.black, width: 0.5),
+          bottom: pw.BorderSide(color: PdfColors.black, width: 0.5),
+        ),
+      ),
+      child: pw.Row(
+        children: [
+          _cellValue(item.codigoProduto ?? '', 8),
+          _cellValue(item.descricaoProduto, 30),
+          _cellValue(item.ncm ?? '', 8, align: pw.TextAlign.center),
+          _cellValue('0${item.cst ?? '00'}', 4, align: pw.TextAlign.center),
+          _cellValue(item.cfop.toString(), 4, align: pw.TextAlign.center),
+          _cellValue(item.unidade, 3, align: pw.TextAlign.center),
+          _cellValue(item.quantidade.toStringAsFixed(4).replaceAll('.', ','), 7,
+              align: pw.TextAlign.right),
+          _cellValue(
+              item.valorUnitario.toStringAsFixed(4).replaceAll('.', ','), 8,
+              align: pw.TextAlign.right),
+          _cellValue(
+              item.valorTotalItem.toStringAsFixed(2).replaceAll('.', ','), 8,
+              align: pw.TextAlign.right),
+          _cellValue('0,00', 6, align: pw.TextAlign.right),
+          _cellValue(
+              (item.baseCalculoIcms ?? 0.0)
+                  .toStringAsFixed(2)
+                  .replaceAll('.', ','),
+              8,
+              align: pw.TextAlign.right),
+          _cellValue(
+              (item.valorIcms ?? 0.0).toStringAsFixed(2).replaceAll('.', ','),
+              8,
+              align: pw.TextAlign.right),
+          _cellValue(
+              (item.valorIpi ?? 0.0).toStringAsFixed(2).replaceAll('.', ','), 6,
+              align: pw.TextAlign.right),
+          _cellValue(
+              (item.aliquotaIcms ?? 0.0)
+                  .toStringAsFixed(2)
+                  .replaceAll('.', ','),
+              4,
+              align: pw.TextAlign.right),
+          _cellValue(
+              (item.aliquotaIpi ?? 0.0).toStringAsFixed(2).replaceAll('.', ','),
+              4,
+              align: pw.TextAlign.right),
+        ],
+      ),
+    );
+  }
+
+  pw.Widget _cellValue(String text, int flex,
+      {pw.TextAlign align = pw.TextAlign.left}) {
+    return pw.Expanded(
+      flex: flex,
+      child: pw.Container(
+        decoration: pw.BoxDecoration(
+          border: pw.Border(
+            right: pw.BorderSide(color: PdfColors.black, width: 0.5),
+          ),
+        ),
+        padding: const pw.EdgeInsets.symmetric(horizontal: 2, vertical: 1),
         child: pw.Text(
-          'DADOS DOS PRODUTOS / SERVIÇOS',
-          style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold),
+          text,
+          textAlign: align,
+          style: pw.TextStyle(fontSize: 7),
         ),
       ),
     );
@@ -1427,54 +1491,6 @@ class DanfeSefazPrinter {
       default:
         return modalidade ?? '';
     }
-  }
-
-  pw.Widget _buildIssqn() {
-    return pw.Column(
-      children: [
-        pw.Container(
-          height: 12,
-          decoration: pw.BoxDecoration(
-            border: pw.Border.all(color: PdfColors.black, width: 0.5),
-            color: PdfColors.grey100,
-          ),
-          child: pw.Center(
-            child: pw.Text(
-              'CÁLCULO DO ISSQN',
-              style: pw.TextStyle(fontSize: 8, fontWeight: pw.FontWeight.bold),
-            ),
-          ),
-        ),
-        pw.Row(
-          children: [
-            pw.Expanded(
-              child: _boxWithLabel(
-                  height: 18,
-                  label: 'INSCRIÇÃO MUNICIPAL',
-                  child: _value('', size: 8)),
-            ),
-            pw.Expanded(
-              child: _boxWithLabel(
-                  height: 18,
-                  label: 'V. TOTAL SERVIÇOS',
-                  child: _value('0,00', size: 8, bold: true)),
-            ),
-            pw.Expanded(
-              child: _boxWithLabel(
-                  height: 18,
-                  label: 'BASE CÁLC. ISSQN',
-                  child: _value('0,00', size: 8, bold: true)),
-            ),
-            pw.Expanded(
-              child: _boxWithLabel(
-                  height: 18,
-                  label: 'VALOR DO ISSQN',
-                  child: _value('0,00', size: 8, bold: true)),
-            ),
-          ],
-        ),
-      ],
-    );
   }
 
   String _formatarNumeroNfe(int numero) {
